@@ -102,3 +102,7 @@ harness = false
 name = "custom_hint"
 path = "../examples/custom_hint/src/main.rs"
 required-features = ["std"]
+
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(no_std)'] }

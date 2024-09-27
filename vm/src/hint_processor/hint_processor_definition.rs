@@ -16,6 +16,7 @@ use felt::Felt252;
 
 #[cfg(feature = "arbitrary")]
 use arbitrary::Arbitrary;
+use serde::{Serialize, Deserialize};
 
 pub trait HintProcessorLogic {
     //Executes the hint which's data is provided by a dynamic structure previously created by compile_hint
@@ -79,7 +80,7 @@ fn get_ids_data(
 }
 
 #[cfg_attr(feature = "arbitrary", derive(Arbitrary))]
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub struct HintReference {
     pub offset1: OffsetValue,
     pub offset2: OffsetValue,

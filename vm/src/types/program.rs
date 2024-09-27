@@ -27,6 +27,7 @@ use crate::{
 use cairo_lang_starknet::casm_contract_class::CasmContractClass;
 use core::num::NonZeroUsize;
 use felt::{Felt252, PRIME_STR};
+use serde::{Deserialize, Serialize};
 
 #[cfg(feature = "std")]
 use std::path::Path;
@@ -55,7 +56,7 @@ use arbitrary::{Arbitrary, Unstructured};
 // exceptional circumstances, such as when reconstructing a backtrace on execution
 // failures.
 // Fields in `Program` (other than `SharedProgramData` itself) are used by the main logic.
-#[derive(Clone, Default, Debug, PartialEq, Eq)]
+#[derive(Clone, Default, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct SharedProgramData {
     pub(crate) data: Vec<MaybeRelocatable>,
     pub(crate) hints_collection: HintsCollection,
@@ -65,6 +66,7 @@ pub(crate) struct SharedProgramData {
     pub(crate) end: Option<usize>,
     pub(crate) error_message_attributes: Vec<Attribute>,
     pub(crate) instruction_locations: Option<HashMap<usize, InstructionLocation>>,
+    #[serde(skip_serializing, skip_deserializing)]
     pub(crate) identifiers: HashMap<String, Identifier>,
     pub(crate) reference_manager: Vec<HintReference>,
 }
@@ -102,7 +104,7 @@ impl<'a> Arbitrary<'a> for SharedProgramData {
     }
 }
 
-#[derive(Clone, Default, Debug, PartialEq, Eq)]
+#[derive(Clone, Default, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct HintsCollection {
     hints: Vec<HintParams>,
     /// This maps a PC to the range of hints in `hints` that correspond to it.
@@ -176,10 +178,13 @@ impl From<&HintsCollection> for BTreeMap<usize, Vec<HintParams>> {
 type HintRange = Option<(usize, NonZeroUsize)>;
 
 #[cfg_attr(all(feature = "arbitrary", feature = "std"), derive(Arbitrary))]
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Program {
+    #[serde(default)]
     pub(crate) shared_program_data: Arc<SharedProgramData>,
+    #[serde(default)]
     pub(crate) constants: HashMap<String, Felt252>,
+    #[serde(default)]
     pub(crate) builtins: Vec<BuiltinName>,
 }
 
